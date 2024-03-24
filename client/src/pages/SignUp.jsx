@@ -1,16 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Label, TextInput, Button, Alert, Spinner } from "flowbite-react";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { signInFailure, signInSuccess, signInStart } from "../redux/userSlice";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.user);
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     if (e.target.type === "file") {
@@ -19,6 +22,7 @@ const SignUp = () => {
       setFormData({ ...formData, [e.target.id]: e.target.value });
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -29,27 +33,27 @@ const SignUp = () => {
     form.append("avatar", formData.avatar);
 
     if (!formData.username || !formData.email || !formData.password) {
-      return setError("Please provide all fields");
+      return dispatch(signInFailure("Please provide all fields"));
     }
     try {
-      setLoading(true);
-      setError(false);
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         body: form,
       });
 
-      setLoading(false);
       const data = await res.json();
       if (data.success === false) {
-        return setError(data.message);
+        return dispatch(signInFailure(data.message));
       }
+
+      dispatch(signInSuccess(data));
       navigate("/signin");
     } catch (error) {
-      setError(error.message);
-      setLoading(false);
+      dispatch(signInFailure(error.message));
     }
   };
+
   return (
     <div className="min-h-screen mt-20 ">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
