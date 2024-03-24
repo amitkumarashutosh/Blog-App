@@ -52,7 +52,7 @@ const signin = asyncHandler(async (req, res) => {
 });
 
 const google = asyncHandler(async (req, res) => {
-  const { email, name, googlePhotoUrl } = req.body;
+  const { email, username, googlePhotoUrl } = req.body;
   const user = await User.findOne({ email });
 
   if (user) {
@@ -63,12 +63,12 @@ const google = asyncHandler(async (req, res) => {
       .cookie("access_token", token, {
         httpOnly: true,
       })
-      .json({ rest });
+      .json(rest);
   } else {
     const generatePassword = Math.random().toString(36).slice(-8);
     const user = await User.create({
       username:
-        name.toLowerCase().split(" ").join("") +
+        username.toLowerCase().split(" ").join("") +
         Math.random().toString(9).slice(-4),
       email,
       password: generatePassword,
