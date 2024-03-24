@@ -52,7 +52,7 @@ const signin = asyncHandler(async (req, res) => {
 });
 
 const google = asyncHandler(async (req, res) => {
-  const { email, username, googlePhotoUrl } = req.body;
+  const { email, username, avatar } = req.body;
   const user = await User.findOne({ email });
 
   if (user) {
@@ -72,7 +72,7 @@ const google = asyncHandler(async (req, res) => {
         Math.random().toString(9).slice(-4),
       email,
       password: generatePassword,
-      profilePicture: googlePhotoUrl,
+      avatar: avatar,
     });
     const token = user.createJWT();
     const { password, ...rest } = user._doc;
