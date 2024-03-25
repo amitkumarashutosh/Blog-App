@@ -10,6 +10,7 @@ import {
 } from "./pages/index";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Private from "./components/Private";
 
 const App = () => {
   return (
