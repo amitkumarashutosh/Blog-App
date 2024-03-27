@@ -7,10 +7,12 @@ import {
   SignIn,
   SignUp,
   Projects,
+  CreatePost,
 } from "./pages/index";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Private from "./components/Private";
+import AdminPrivate from "./components/AdminPrivate";
 
 const App = () => {
   return (
@@ -21,6 +23,9 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route element={<Private />}>
           <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+        <Route element={<AdminPrivate />}>
+          <Route path="/create-post" element={<CreatePost />} />
         </Route>
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />

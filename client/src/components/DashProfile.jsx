@@ -8,10 +8,10 @@ import {
   deleteInFailure,
   deleteInSuccess,
   deleteInStart,
-  signInSuccess,
   signoutFailure,
   signoutSuccess,
 } from "../redux/userSlice";
+import { Link } from "react-router-dom";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 const DashProfile = () => {
@@ -153,6 +153,17 @@ const DashProfile = () => {
             "Update"
           )}
         </Button>
+        {currentUser.isAdmin && (
+          <Link to="/create-post">
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
+            >
+              Create a post
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="text-red-500 flex justify-between my-5">
         <span onClick={() => setShowModel(true)} className="cursor-pointer">

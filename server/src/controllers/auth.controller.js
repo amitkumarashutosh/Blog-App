@@ -9,6 +9,9 @@ const signup = asyncHandler(async (req, res) => {
     throw new ApiError("All fields are required!");
   }
 
+  const isFirstAccount = (await User.countDocuments({})) === 0;
+  const role = isFirstAccount ? true : false;
+
   let avatar = "";
   const path = req.file?.path;
   if (path) {
@@ -20,6 +23,7 @@ const signup = asyncHandler(async (req, res) => {
     password,
     username: username.toLowerCase(),
     avatar: avatar?.url,
+    isAdmin: role,
   });
   const { password: pass, ...rest } = user._doc;
   res.status(201).json(rest);
