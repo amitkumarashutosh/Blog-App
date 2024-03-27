@@ -1,7 +1,7 @@
 import asyncHandler from "../utils/async.js";
 import { ApiError } from "../utils/error.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary, deleteOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const signup = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
@@ -9,7 +9,6 @@ const signup = asyncHandler(async (req, res) => {
     throw new ApiError("All fields are required!");
   }
 
-  console.log(req.file);
   let avatar = "";
   const path = req.file?.path;
   if (path) {

@@ -10,10 +10,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 import authRouter from "./src/routes/auth.route.js";
-// import userRouter from "./src/routes/user.route.js";
+import userRouter from "./src/routes/user.route.js";
 
 app.use("/api/auth", authRouter);
-// app.use("/api/user", userRouter);
+app.use("/api/user", userRouter);
 
 //not foud
 import notFound from "./src/utils/notFound.js";

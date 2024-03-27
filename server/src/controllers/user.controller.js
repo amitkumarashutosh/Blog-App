@@ -1,56 +1,32 @@
 import asyncHandler from "../utils/async.js";
 import { ApiError } from "../utils/error.js";
 import { User } from "../models/user.model.js";
-import bcrypt from "bcryptjs";
+import { uploadOnCloudinary, deleteOnCloudinary } from "../utils/cloudinary.js";
 
 const updateUser = asyncHandler(async (req, res) => {
+  console.log(req.user.id, req.params.userId);
   if (req.user.id !== req.params.userId) {
     throw new ApiError(403, "You are not allowed to update the user");
   }
+  const { username, password, email } = req.body;
 
-  if (req.body.password && req.body.password.length <= 4) {
-    throw new ApiError(400, "Password must be at least 4 characters");
-  }
-  if (
-    req.body.username &&
-    (req.body.username.length < 7 || req.body.username.length > 20)
-  ) {
-    throw new ApiError(400, "Username must be between 7 and 20 characters");
-  }
-  if (req.body.username && req.body.username.includes(" ")) {
-    throw new ApiError(400, "Username cannot contains space");
-  }
-  if (
-    req.body.username &&
-    req.body.username !== req.body.username.toLowerCase()
-  ) {
-    throw new ApiError(400, "Username must be lowercase");
+  const user = await User.findById(req.params.userId);
+  await deleteOnCloudinary(user.avatar);
+
+  let avatar = "";
+  const path = req.file?.path;
+  if (path) {
+    avatar = await uploadOnCloudinary(path);
   }
 
-  let updateFields = {
-    username: req.body.username,
-    email: req.body.email,
-    profilePicture: req.body.profilePicture,
-  };
-  if (req.body.password) {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    updateFields.password = hashedPassword;
-  }
+  if (username) user.username = username;
+  if (email) user.email = email;
+  if (password) user.password = password;
+  if (avatar) user.avatar = avatar.url;
+  await user.save();
 
-  const user = await User.findByIdAndUpdate(
-    req.params.userId,
-    {
-      $set: updateFields,
-    },
-    { new: true }
-  );
-
-  if (!user) {
-    throw new ApiError(404, "User does not exist");
-  }
-
-  const { password, ...rest } = user._doc;
-  res.status(200).json({ rest });
+  const { password: pass, ...rest } = user._doc;
+  res.status(200).json(rest);
 });
 
 const deleteUser = asyncHandler(async (req, res) => {

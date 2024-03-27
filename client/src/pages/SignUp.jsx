@@ -31,7 +31,7 @@ const SignUp = () => {
     form.append("username", formData.username);
     form.append("email", formData.email);
     form.append("password", formData.password);
-    form.append("avatar", formData.avatar);
+    if (formData.avatar) form.append("avatar", formData.avatar);
 
     if (!formData.username || !formData.email || !formData.password) {
       return dispatch(signInFailure("Please provide all fields"));
