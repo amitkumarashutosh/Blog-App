@@ -13,7 +13,7 @@ const createPost = asyncHandler(async (req, res) => {
   if (path) {
     image = await uploadOnCloudinary(path);
   }
-  const { title, content } = req.body;
+  const { title, content, category } = req.body;
   if (!title || !content) {
     throw new ApiError(400, "Please provide all required fields");
   }
@@ -28,6 +28,7 @@ const createPost = asyncHandler(async (req, res) => {
     title,
     content,
     slug,
+    category,
     userId: req.user.id,
     image: image?.url,
   });
@@ -71,4 +72,37 @@ const getPosts = asyncHandler(async (req, res) => {
   res.status(200).json({ posts, totalPosts, lastMonthPosts });
 });
 
-export { createPost, getPosts };
+const deletePost = asyncHandler(async (req, res) => {
+  if (!req.user.isAdmin) {
+    throw new ApiError(403, "You are not allowed to delete this post");
+  }
+
+  await Post.findByIdAndDelete(req.params.id);
+  res.status(200).json("The post has been deleted");
+});
+
+const editPost = asyncHandler(async (req, res) => {
+  if (!req.user.isAdmin) {
+    throw new ApiError(403, "You are not allowed to update this post");
+  }
+
+  let image = "";
+  const path = req.file?.path;
+  if (path) {
+    image = await uploadOnCloudinary(path);
+  }
+
+  const post = await Post.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: {
+        ...req.body,
+        ...(path && { image: image?.url }),
+      },
+    },
+    { new: true }
+  );
+  res.status(200).json(post);
+});
+
+export { createPost, getPosts, deletePost, editPost };

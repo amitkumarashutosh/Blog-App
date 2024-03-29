@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Table } from "flowbite-react";
+import { Table, Modal, Button } from "flowbite-react";
 import { Link } from "react-router-dom";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 const DashPost = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [userPosts, setUserPosts] = useState([]);
   const [showMore, setShowMore] = useState(true);
+  const [showModel, setShowModel] = useState(false);
+  const [postId, setPostId] = useState(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -37,6 +40,20 @@ const DashPost = () => {
           setShowMore(false);
         }
         setUserPosts([...userPosts, ...data.posts]);
+      }
+    } catch (error) {}
+  };
+
+  const handleDeletePost = async (id) => {
+    try {
+      const res = await fetch(`/api/post/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        setUserPosts(userPosts.filter((post) => post._id !== id));
       }
     } catch (error) {}
   };
@@ -74,7 +91,13 @@ const DashPost = () => {
                     </Table.Cell>
                     <Table.Cell>{post.category}</Table.Cell>
                     <Table.Cell>
-                      <span className="font-medium text-red-500 hover:underline cursor-pointer">
+                      <span
+                        onClick={() => {
+                          setShowModel(true);
+                          setPostId(post._id);
+                        }}
+                        className="font-medium text-red-500 hover:underline cursor-pointer"
+                      >
                         Delete
                       </span>
                     </Table.Cell>
@@ -103,6 +126,34 @@ const DashPost = () => {
       ) : (
         <p>You have no posts</p>
       )}
+      <Modal
+        show={showModel}
+        onClose={() => setShowModel(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 darK:text0gray-200 mb-4 mx-auto" />
+            <h1 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete this post
+            </h1>
+            <div className="flex justify-center gap-4">
+              <Button
+                color="failure"
+                onClick={() => {
+                  handleDeletePost(postId);
+                  setShowModel(false);
+                }}
+              >
+                Yes, I'm sure
+              </Button>
+              <Button onClick={() => setShowModel(false)}>No, cancel</Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

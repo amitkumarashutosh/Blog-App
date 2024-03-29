@@ -8,6 +8,7 @@ import {
   SignUp,
   Projects,
   CreatePost,
+  UpdatePost,
 } from "./pages/index";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -26,6 +27,7 @@ const App = () => {
         </Route>
         <Route element={<AdminPrivate />}>
           <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/update-post/:postId" element={<UpdatePost />} />
         </Route>
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />

@@ -6,17 +6,36 @@ import {
   TextInput,
   Spinner,
 } from "flowbite-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const CreatePost = () => {
+const UpdatePost = () => {
   const [formData, setFormData] = useState({});
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { postId } = useParams();
+
+  useEffect(() => {
+    const fetchUserPost = async () => {
+      setError(null);
+      try {
+        const res = await fetch(`/api/post?postId=${postId}`);
+        const data = await res.json();
+        if (res.ok) {
+          setFormData(data.posts[0]);
+        } else {
+          setError(data.message);
+        }
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+    fetchUserPost();
+  }, [postId]);
 
   const handleImageUpload = (e) => {
     if (formData.image) {
@@ -33,9 +52,6 @@ const CreatePost = () => {
       setImagePreview(null);
     }
   };
-  const handleImageRemove = (e) => {
-    setImagePreview(null);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,16 +60,16 @@ const CreatePost = () => {
     }
     const form = new FormData();
 
-    form.append("title", formData.title);
-    form.append("content", formData.content);
+    if (formData.title) form.append("title", formData.title);
+    if (formData.content) form.append("content", formData.content);
     if (formData.category) form.append("category", formData.category);
     if (formData.image) form.append("image", formData.image);
 
     try {
       setError(false);
       setLoading(true);
-      const res = await fetch("/api/post", {
-        method: "POST",
+      const res = await fetch(`/api/post/${postId}`, {
+        method: "PATCH",
         body: form,
       });
       const data = await res.json();
@@ -71,7 +87,7 @@ const CreatePost = () => {
   };
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
-      <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
+      <h1 className="text-center text-3xl my-7 font-semibold">Update a post</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
@@ -83,11 +99,13 @@ const CreatePost = () => {
             onChange={(e) =>
               setFormData({ ...formData, title: e.target.value })
             }
+            value={formData.title}
           />
           <Select
             onChange={(e) =>
               setFormData({ ...formData, category: e.target.value })
             }
+            value={formData.category}
           >
             <option value="uncategorized">Select a category</option>
             <option value="javascript">Javascript</option>
@@ -108,7 +126,9 @@ const CreatePost = () => {
             gradientDuoTone="purpleToBlue"
             size="sm"
             outline
-            onClick={imagePreview ? handleImageRemove : handleImageUpload}
+            onClick={
+              imagePreview ? () => setImagePreview(null) : handleImageUpload
+            }
           >
             {imagePreview ? "Remove image" : "Upload image"}
           </Button>
@@ -118,8 +138,14 @@ const CreatePost = () => {
             <img src={imagePreview} className="w-full" />
           </div>
         )}
+        {formData.image && typeof formData.image === "string" && (
+          <div className="max-w-80 mx-auto">
+            <img src={formData.image} className="w-full" />
+          </div>
+        )}
         <ReactQuill
           theme="snow"
+          value={formData.content}
           placeholder="Write something..."
           className="h-72 mb-12"
           required
@@ -134,7 +160,7 @@ const CreatePost = () => {
               <span className="pl-3">Loading...</span>
             </>
           ) : (
-            "Publish"
+            "Update Post"
           )}
         </Button>
         {error && <Alert color="failure">{error}</Alert>}
@@ -143,4 +169,4 @@ const CreatePost = () => {
   );
 };
 
-export default CreatePost;
+export default UpdatePost;
