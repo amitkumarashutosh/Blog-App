@@ -42,4 +42,36 @@ const signOut = (req, res) => {
   res.clearCookie("access_token").status(200).json("User has been signed out");
 };
 
-export { updateUser, deleteUser, signOut };
+const getUser = asyncHandler(async (req, res) => {
+  if (!req.user.isAdmin) {
+    throw new ApiError(403, "You are not allowed to get all users");
+  }
+  const startIndex = parseInt(req.query.startIndex) || 0;
+  const limit = parseInt(req.query.limit) || 9;
+  const sortDirection = req.query.sort === "asc" ? 1 : -1;
+
+  const users = await User.find({})
+    .sort({ createdAt: sortDirection })
+    .skip(startIndex)
+    .limit(limit);
+
+  const usersWithoutPassword = users.map((user) => {
+    const { password, ...rest } = user._doc;
+    return rest;
+  });
+
+  const totalUsers = await User.countDocuments();
+  const now = new Date();
+  const oneMonthAgo = new Date(
+    now.getFullYear(),
+    now.getMonth() - 1,
+    now.getDate()
+  );
+  const lastMonthUsers = await User.countDocuments({
+    createdAt: { $gte: oneMonthAgo },
+  });
+
+  res.status(200).json({ usersWithoutPassword, totalUsers, lastMonthUsers });
+});
+
+export { updateUser, deleteUser, signOut, getUser };
