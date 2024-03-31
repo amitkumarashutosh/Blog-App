@@ -74,4 +74,15 @@ const getUser = asyncHandler(async (req, res) => {
   res.status(200).json({ usersWithoutPassword, totalUsers, lastMonthUsers });
 });
 
-export { updateUser, deleteUser, signOut, getUser };
+const getSingleUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, `No user with id ${userId}`);
+  }
+
+  const { password, ...rest } = user._doc;
+  res.status(200).json(rest);
+});
+
+export { updateUser, deleteUser, signOut, getUser, getSingleUser };

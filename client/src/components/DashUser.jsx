@@ -78,7 +78,7 @@ const DashUser = () => {
                       <img
                         src={user.avatar}
                         alt={user.username}
-                        className="w-20 h-20 object-cover bg-gray-500 rounded-full"
+                        className="w-10 h-10 object-cover bg-gray-500 rounded-full"
                       />
                     </Table.Cell>
                     <Table.Cell className="font-medium text-gray-900 darK;text-white">

@@ -4,6 +4,7 @@ import {
   deleteUser,
   signOut,
   getUser,
+  getSingleUser,
 } from "../controllers/user.controller.js";
 import { verifyToken } from "../middlewares/auth.js";
 import { upload } from "../middlewares/multer.js";
@@ -16,5 +17,6 @@ router
   .get(verifyToken, getUser);
 router.route("/:userId").delete(verifyToken, deleteUser);
 router.route("/signout").post(signOut);
+router.route("/get/:userId").get(getSingleUser);
 
 export default router;

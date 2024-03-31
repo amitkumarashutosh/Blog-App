@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import {
   Home,
   About,
@@ -14,10 +19,13 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Private from "./components/Private";
 import AdminPrivate from "./components/AdminPrivate";
+import Post from "./pages/Post";
+import ScrollToTop from "./components/ScrollToTop";
 
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -32,6 +40,8 @@ const App = () => {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/post/:slugId" element={<Post />} />
+        <Route path="*" element={<Navigate to="/signin" />} />
       </Routes>
       <Footer />
     </Router>
