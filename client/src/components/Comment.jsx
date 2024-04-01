@@ -4,7 +4,7 @@ import { FaExpeditedssl, FaThumbsUp } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Button, Textarea } from "flowbite-react";
 
-const Comment = ({ comment, onLike, onEdit }) => {
+const Comment = ({ comment, onLike, onEdit, onDelete }) => {
   const [user, setUser] = useState({});
   const { currentUser } = useSelector((state) => state.user);
   const [editing, setEditing] = useState(false);
@@ -40,6 +40,19 @@ const Comment = ({ comment, onLike, onEdit }) => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const res = await fetch(`/api/comment/${comment._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        onDelete(comment._id);
+      }
+    } catch (error) {}
+    onDelete(comment._id);
   };
 
   return (
@@ -112,13 +125,22 @@ const Comment = ({ comment, onLike, onEdit }) => {
               </p>
               {currentUser &&
                 (currentUser._id === comment.userId || currentUser.isAdmin) && (
-                  <button
-                    type="button"
-                    onClick={() => setEditing(true)}
-                    className="text-gray-500"
-                  >
-                    Edit
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setEditing(true)}
+                      className="text-gray-500"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDelete}
+                      className="text-red-500"
+                    >
+                      Delete
+                    </button>
+                  </>
                 )}
             </div>
           </>

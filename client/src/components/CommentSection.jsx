@@ -79,6 +79,14 @@ const CommentSection = ({ postId }) => {
     } catch (error) {}
   };
 
+  const handleDelete = async (commentId) => {
+    setComments(
+      comments.filter((c) => {
+        return c._id !== commentId;
+      })
+    );
+  };
+
   const handleEdit = async (comment, editedContent) => {
     setComments(
       comments.map((c) =>
@@ -153,6 +161,7 @@ const CommentSection = ({ postId }) => {
               comment={comment}
               onLike={handleLike}
               onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           ))}
         </>
