@@ -8,7 +8,7 @@ const createComment = asyncHandler(async (req, res) => {
   res.status(201).json(comment);
 });
 
-const getAllComment = asyncHandler(async (req, res) => {
+const getAllPostComment = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const comment = await Comment.find({ postId: id }).sort({ createdAt: -1 });
   if (!comment) {
@@ -70,10 +70,29 @@ const deleteComment = asyncHandler(async (req, res) => {
   res.status(200).json("Comment deleted successfully");
 });
 
+const getAllComments = asyncHandler(async (req, res) => {
+  if (!req.user.isAdmin) {
+    throw new ApiError(403, "You are not allowed to get all comments");
+  }
+  const limit = req.query.limit || 9;
+  const skip = req.query.skip || 0;
+
+  const comment = await Comment.find({})
+    .limit(limit)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .populate("userId", "username email")
+    .populate("postId", "slug");
+
+  const totalComments = await Comment.countDocuments({});
+  res.status(200).json({ comment, count: totalComments });
+});
+
 export {
   createComment,
-  getAllComment,
+  getAllPostComment,
   likeComment,
   editComment,
   deleteComment,
+  getAllComments,
 };
