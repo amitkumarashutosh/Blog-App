@@ -14,6 +14,7 @@ import {
   Projects,
   CreatePost,
   UpdatePost,
+  Search,
 } from "./pages/index";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -42,6 +43,7 @@ const App = () => {
         <Route path="/projects" element={<Projects />} />
         <Route path="/post/:slugId" element={<Post />} />
         <Route path="*" element={<Navigate to="/signin" />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
       <Footer />
     </Router>
