@@ -24,7 +24,7 @@ export default function Home() {
   }, []);
 
   if (loading)
-    return <Loader2 className="animate-spin mx-auto mt-10 w-5 h-5" />;
+    return <Loader2 className="animate-spin mx-auto mt-20 mb-20 w-10 h-10" />;
 
   return (
     <div>
