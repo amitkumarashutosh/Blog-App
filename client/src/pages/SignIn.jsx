@@ -11,8 +11,8 @@ const SignIn = () => {
   const { loading, error } = useSelector((state) => state.user);
 
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "user@gmail.com",
+    password: "user",
   });
 
   const handleChange = (e) => {
@@ -92,16 +92,6 @@ const SignIn = () => {
               )}
             </Button>
             <OAuth />
-            <Button
-              onClick={() => {
-                setFormData({
-                  email: "example@gmail.com",
-                  password: "example",
-                });
-              }}
-            >
-              Guest User
-            </Button>
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>Don't have an account?</span>

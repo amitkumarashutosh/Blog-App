@@ -1,19 +1,31 @@
 import { Link } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 import { useEffect, useState } from "react";
 import PostCard from "../components/PostCard";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = await fetch("/api/post");
-      const data = await res.json();
-      setPosts(data.posts);
+      try {
+        setLoading(true);
+        const res = await fetch("/api/post");
+        const data = await res.json();
+        setPosts(data.posts);
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
     };
     fetchPosts();
   }, []);
+
+  if (loading)
+    return <Loader2 className="animate-spin mx-auto mt-10 w-5 h-5" />;
+
   return (
     <div>
       <div className="flex flex-col gap-6 p-28 px-3 max-w-6xl mx-auto ">
@@ -34,7 +46,7 @@ export default function Home() {
         {posts && posts.length > 0 && (
           <div className="flex flex-col gap-6">
             <h2 className="text-2xl font-semibold text-center">Recent Posts</h2>
-            <div className="flex flex-wrap gap-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {posts.map((post) => (
                 <PostCard key={post._id} post={post} />
               ))}

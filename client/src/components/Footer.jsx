@@ -28,13 +28,18 @@ export default function FooterCom() {
               <Footer.Title title="Follow us" />
               <Footer.LinkGroup col>
                 <Footer.Link
-                  href="https://www.github.com/sahandghavidel"
+                  href="https://github.com/amitkumarashutosh"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Github
                 </Footer.Link>
-                <Footer.Link href="#">Linkedin</Footer.Link>
+                <Footer.Link
+                  href="https://www.linkedin.com/in/amit-kumar-ashutosh/"
+                  target="_blank"
+                >
+                  Linkedin
+                </Footer.Link>
               </Footer.LinkGroup>
             </div>
             <div>
