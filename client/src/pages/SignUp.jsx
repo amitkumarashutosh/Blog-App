@@ -49,7 +49,7 @@ const SignUp = () => {
       }
 
       dispatch(signInSuccess(data));
-      navigate("/signin");
+      navigate("/");
     } catch (error) {
       dispatch(signInFailure(error.message));
     }

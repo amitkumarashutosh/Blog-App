@@ -7,7 +7,7 @@ export default function Search() {
   const [sidebarData, setSidebarData] = useState({
     searchTerm: "",
     sort: "desc",
-    category: "uncategorized",
+    category: "",
   });
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -17,9 +17,9 @@ export default function Search() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
     const fetchPosts = async () => {
       setLoading(true);
+      const urlParams = new URLSearchParams(location.search);
       const res = await fetch(`/api/post?${urlParams.toString()}`);
       setLoading(false);
 
@@ -34,19 +34,24 @@ export default function Search() {
   }, [location.search]);
 
   const handleChange = (e) => {
+    const { id, value } = e.target;
+
     setSidebarData((prev) => ({
       ...prev,
-      [e.target.id]:
-        e.target.value || (e.target.id === "sort" ? "desc" : "uncategorized"),
+      [id]: id === "category" && value === "uncategorized" ? "" : value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const urlParams = new URLSearchParams();
+
     Object.keys(sidebarData).forEach((key) => {
-      if (sidebarData[key]) urlParams.set(key, sidebarData[key]);
+      if (sidebarData[key]) {
+        urlParams.set(key, sidebarData[key]);
+      }
     });
+
     navigate(`/search?${urlParams.toString()}`);
   };
 
@@ -86,10 +91,10 @@ export default function Search() {
             <label className="font-semibold">Category:</label>
             <Select
               id="category"
-              value={sidebarData.category}
+              value={sidebarData.category || "uncategorized"}
               onChange={handleChange}
             >
-              <option value="uncategorized">Uncategorized</option>
+              <option value="uncategorized">All Posts</option>
               <option value="reactjs">React.js</option>
               <option value="nextjs">Next.js</option>
               <option value="javascript">JavaScript</option>
